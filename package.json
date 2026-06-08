@@ -1,6 +1,7 @@
 {
-  "name": "codeview",
+  "name": "@ramankarki/codeview",
   "version": "1.0.0",
+  "private": false,
   "description": "Local codebase intelligence server for coding agents — type-aware repo maps + semantic search via Ollama",
   "type": "module",
   "license": "MIT",

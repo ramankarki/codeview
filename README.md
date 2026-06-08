@@ -18,9 +18,9 @@ Local codebase intelligence server for coding agents. Type-aware repo maps + sem
 ## Quick start
 
 ```bash
-bun add -D codeview
-bunx codeview start
-bunx codeview context "add Stripe webhook handler"
+bun add -D @ramankarki/codeview
+bunx @ramankarki/codeview start
+bunx @ramankarki/codeview context "add Stripe webhook handler"
 ```
 
 ## Commands
