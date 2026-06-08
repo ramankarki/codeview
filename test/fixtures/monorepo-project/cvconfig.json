@@ -1,0 +1,6 @@
+{
+  "projects": [
+    { "name": "app", "tsconfig": "packages/app/tsconfig.json" },
+    { "name": "shared", "tsconfig": "packages/shared/tsconfig.json" }
+  ]
+}

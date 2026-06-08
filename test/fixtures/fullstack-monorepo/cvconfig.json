@@ -1,0 +1,7 @@
+{
+  "projects": [
+    { "name": "api", "tsconfig": "packages/api/tsconfig.json" },
+    { "name": "web", "tsconfig": "packages/web/tsconfig.json" },
+    { "name": "shared", "tsconfig": "packages/shared/tsconfig.json" }
+  ]
+}

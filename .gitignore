@@ -1,0 +1,5 @@
+node_modules/
+dist/
+.codeview/
+*.db-shm
+*.db-wal

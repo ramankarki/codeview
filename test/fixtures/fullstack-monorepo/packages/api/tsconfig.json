@@ -1,0 +1,4 @@
+{
+  "compilerOptions": { "target": "ESNext", "module": "ESNext", "moduleResolution": "bundler", "strict": true, "outDir": "dist", "rootDir": "src", "paths": { "@shared/*": ["../../shared/src/*"] } },
+  "include": ["src"]
+}
