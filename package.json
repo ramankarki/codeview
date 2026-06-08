@@ -1,10 +1,13 @@
 {
   "name": "@ramankarki/codeview",
   "version": "1.0.0",
-  "private": false,
-  "description": "Local codebase intelligence server for coding agents — type-aware repo maps + semantic search via Ollama",
+  "description": "Local codebase intelligence server for coding agents — type-aware repo maps + semantic code search via Ollama. Pluggable into any agent via HTTP.",
   "type": "module",
   "license": "MIT",
+  "homepage": "https://github.com/ramankarki/codeview#readme",
+  "bugs": {
+    "url": "https://github.com/ramankarki/codeview/issues"
+  },
   "publishConfig": {
     "access": "public"
   },
@@ -36,17 +39,20 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ramankarki/codeview"
+    "url": "git+https://github.com/ramankarki/codeview.git"
   },
   "keywords": [
-    "codebase",
-    "intelligence",
-    "embedding",
-    "semantic-search",
+    "codeview",
+    "codebase-intelligence",
     "repo-map",
+    "semantic-search",
+    "embeddings",
+    "ollama",
+    "sqlite-vec",
     "typescript",
+    "ts-morph",
     "coding-agent",
-    "llm",
-    "ollama"
+    "ai-agent",
+    "llm-tools"
   ]
 }
