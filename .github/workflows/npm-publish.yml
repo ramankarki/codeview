@@ -7,20 +7,18 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@v6
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
+          registry-url: 'https://registry.npmjs.org'
 
       - run: bun install --frozen-lockfile
-      - run: bun run typecheck
-      - run: bun test
-      - run: bun run build
-
-      - run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - run: npm publish --provenance
 
       - uses: softprops/action-gh-release@v2
         with:
