@@ -68,6 +68,8 @@ brew install ollama && ollama pull nomic-embed-text
 
 Output groups by project, flags cross-package edges in `[imported by: ...]` annotations.
 
+Full config reference: [`cvconfig.example.json`](./cvconfig.example.json).
+
 ### Embedding providers
 
 ```json
@@ -231,7 +233,7 @@ Runtime: ~9s. Ollama embedding tests run live (not mocked).
 
 ## Configuration reference
 
-`cvconfig.json`:
+All options in `cvconfig.json`. Copy from [`cvconfig.example.json`](./cvconfig.example.json):
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
