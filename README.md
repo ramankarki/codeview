@@ -2,6 +2,19 @@
 
 Local codebase intelligence server for coding agents. Type-aware repo maps + semantic search via Ollama — pluggable into any agent via HTTP.
 
+## Contents
+
+- [Quick start](#quick-start)
+- [Commands](#commands)
+- [How it works](#how-it-works)
+- [Monorepo](#monorepo)
+- [Agent integration](#agent-integration)
+- [Benchmarks](#benchmarks)
+- [Comparison](#comparison)
+- [Development](#development)
+- [Configuration reference](#configuration-reference)
+- [Requirements](#requirements)
+
 ## Quick start
 
 ```bash
