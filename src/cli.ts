@@ -61,9 +61,11 @@ async function main() {
       }
 
       // Spawn server daemon as detached child
-      const daemonScript = resolve(import.meta.dir, "server-daemon.ts");
+      const daemonScript = resolve(import.meta.dir, "server-daemon.js");
+      // Use .ts fallback during development
+      const scriptPath = existsSync(daemonScript) ? daemonScript : resolve(import.meta.dir, "server-daemon.ts");
       const proc = Bun.spawn(
-        ["bun", "run", daemonScript, rootDir],
+        ["bun", "run", scriptPath, rootDir],
         {
           stdout: "pipe",
           stderr: "inherit",
