@@ -5,6 +5,9 @@
   "description": "Local codebase intelligence server for coding agents — type-aware repo maps + semantic search via Ollama",
   "type": "module",
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
   "bin": {
     "codeview": "./dist/cli.js"
   },
