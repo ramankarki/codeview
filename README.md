@@ -158,8 +158,9 @@ All domain-specific queries return exactly the right function/type in top 3 resu
 
 We ran codeview on its own 18-file codebase. Agent task "add --port flag to start command":
 
-Without: 5 reads to discover `cli.ts` → `server.ts` → `config.ts` → `types.ts` → `server-daemon.ts`
-With: 1 context call → map shows `startServer(rootDir, requestedPort)` and `CodeviewConfig.port` → jump straight to cli.ts
+> Without: 5 reads to discover `cli.ts` → `server.ts` → `config.ts` → `types.ts` → `server-daemon.ts`
+
+> With: 1 context call → map shows `startServer(rootDir, requestedPort)` and `CodeviewConfig.port` → jump straight to cli.ts
 
 Semantic queries on its own code confirmed accuracy:
 - "file watching" → `markStale()` (1.002) — the exact function that handles file changes
@@ -251,4 +252,6 @@ Runtime: ~9s. Ollama embedding tests run live (not mocked).
 
 - Bun ≥ 1.1.0
 - Ollama (optional, for semantic search)
-- macOS: Homebrew SQLite required for sqlite-vec (`brew install sqlite3`)
+- **macOS**: Homebrew SQLite required for sqlite-vec (`brew install sqlite3` — automatic detection)
+- **Linux**: Works out of the box (Bun SQLite has extension loading)
+- **Windows**: Works out of the box (file watching degrades gracefully to manual rebuild)

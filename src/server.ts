@@ -113,25 +113,30 @@ async function startServer(rDir: string, requestedPort: number = 0): Promise<{ p
   // Start idle timer
   resetIdleTimer();
 
-  // Set up file watching
-  fileWatcher = watch(
-    rootDir,
-    { recursive: true },
-    (event, filename) => {
-      if (!filename) return;
-      if (/node_modules|\.git|dist|\.codeview|\/\./.test(filename)) return;
-      if (!/\.(ts|tsx|js|jsx|mjs|cjs)$/.test(filename)) return;
+  // Set up file watching (graceful fallback on Windows where recursive may fail)
+  try {
+    fileWatcher = watch(
+      rootDir,
+      { recursive: true },
+      (event, filename) => {
+        if (!filename) return;
+        if (/node_modules|\.git|dist|\.codeview|\/\./.test(filename)) return;
+        if (!/\.(ts|tsx|js|jsx|mjs|cjs)$/.test(filename)) return;
 
-      const absPath = resolve(rootDir, filename);
-      const sf = project.getSourceFile(absPath);
-      if (!sf) return;
+        const absPath = resolve(rootDir, filename);
+        const sf = project.getSourceFile(absPath);
+        if (!sf) return;
 
-      try { sf.refreshFromFileSystemSync(); } catch {}
+        try { sf.refreshFromFileSystemSync(); } catch {}
 
-      markStale(absPath);
-      setCachedRepoMap("", 0);
-    }
-  );
+        markStale(absPath);
+        setCachedRepoMap("", 0);
+      }
+    );
+  } catch {
+    // Recursive watching not supported on this platform (e.g. Windows)
+    // File changes will require manual restart or codeview rebuild
+  }
 
   return { port: server.port! };
 }

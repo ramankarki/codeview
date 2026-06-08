@@ -1,0 +1,17 @@
+{
+  "projects": [
+    { "name": "api", "tsconfig": "packages/api/tsconfig.json" },
+    { "name": "web", "tsconfig": "packages/web/tsconfig.json" },
+    { "name": "shared", "tsconfig": "packages/shared/tsconfig.json" }
+  ],
+  "exclude": ["**/*.test.ts", "**/__mocks__/**"],
+  "embedding": {
+    "provider": "ollama"
+  },
+  "tokenBudget": 5000,
+  "graphWalk": {
+    "maxDepth": 1,
+    "maxNeighborsPerNode": 5,
+    "maxAugmentationTokens": 2000
+  }
+}
