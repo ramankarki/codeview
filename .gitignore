@@ -1,5 +1,6 @@
 node_modules/
 dist/
 .codeview/
+*.tgz
 *.db-shm
 *.db-wal

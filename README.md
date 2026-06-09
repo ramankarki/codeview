@@ -112,7 +112,7 @@ Agent task: *"add --port flag to start command"*
 
 | Approach | Round-trips | Files read |
 |----------|-------------|------------|
-| Without codeview | 5 | `cli.ts` → `server.ts` → `config.ts` → `types.ts` → `server-daemon.ts` |
+| Without codeview | 5 | `cli.ts` → `server.ts` → `config.ts` → `types.ts` |
 | With codeview | 1 | `codeview context` → map shows `startServer(rootDir, requestedPort)` + `CodeviewConfig.port` |
 
 ### Test fixtures

@@ -1,35 +1,39 @@
 /**
  * Generate AGENTS.md snippet for codeview integration.
- * Intended to be copied into the user's AGENTS.md or system prompt.
+ * Designed to be placed at the TOP of the agent's instructions,
+ * establishing codeview as the primary source of truth for the codebase.
  */
 export function generateAgentInstructions(port?: number): string {
   const portNote = port ? ` (port ${port})` : " (auto-assigned, read from .codeview/port)";
-  return `## Codebase intelligence (codeview)
+  return `## Codebase intelligence — codeview (PRIMARY SOURCE OF TRUTH)
 
-codeview is a local codebase intelligence server that gives you
-type-aware repo maps and semantic code search before you write any code.
-It auto-starts and auto-stops — you never need to manage it manually.
+**RULE: codeview is the first and primary way you understand this codebase.
+Use it BEFORE reading any file, running any grep, or exploring anything manually.**
 
-### Routine (do this at the start of every coding session)
+### The codeview-first workflow (MANDATORY for every task)
 
-1. Call \`codeview start\` — idempotent, exits immediately if already running${portNote}
-2. For every task, call \`codeview context "<task description>"\`
-3. Inject the returned repo map + semantic matches + related code into your system prompt
-4. Write code with full context already loaded — no exploratory file reads needed
+1. \`codeview start\` — idempotent, exits immediately if already running${portNote}
+2. \`codeview context "<your task description>"\` — returns everything you need
+3. Inject the output (repo map + semantic matches + related code) into your context
+4. Write code with full context loaded — no blind file reads, no guessing
 
-### What you get
+**ANTI-PATTERNS (DO NOT DO):**
+- ❌ Reading files one-by-one to "understand" the codebase
+- ❌ Using grep/rg to find symbols before consulting codeview
+- ❌ Guessing a function exists without checking \`codeview find\`
+- ❌ Exploring directory trees manually when \`codeview repo-map\` exists
 
-\`codeview context "add Stripe webhook"\` returns:
+### What \`codeview context "add Stripe webhook"\` returns
 
 1. **Repo map** — every exported function/class/interface/type with full type signatures,
    ranked by import centrality, grouped by package (monorepo-aware).
-   Shows \`[imported by: ...]\` so you know dependencies.
+   Shows \`[imported by: ...]\` so you know dependencies cold.
 2. **Semantic matches** — code chunks closest to your task description,
    via local Ollama embeddings (nomic-embed-text) or keyword fallback.
    Each result has distance score — lower = better match.
 3. **Related code** — import neighbors from graph walk (depth=1, top 5 per node).
 
-### Quick lookups (after context, while coding)
+### Quick lookups (use during coding, after context)
 
 \`\`\`bash
 codeview find <name>           # exact location: file, line, type signature
@@ -37,6 +41,11 @@ codeview references <name>     # every file that imports this symbol
 codeview search "<query>"      # semantic + keyword hybrid (top 10)
 codeview repo-map              # full structural map (no query, full detail)
 \`\`\`
+
+### When to read files directly
+
+Only AFTER codeview gives you the exact file path and line. Read only the
+specific region you need (use offset/limit). Never read entire files cold.
 
 ### Server lifecycle (rarely needed)
 

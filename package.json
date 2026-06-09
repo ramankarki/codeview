@@ -19,7 +19,7 @@
     "README.md"
   ],
   "scripts": {
-    "build": "bun build src/cli.ts --outdir dist --target bun && bun build src/server-daemon.ts --outdir dist --target bun",
+    "build": "bun build src/cli.ts --outdir dist --target bun",
     "prepublishOnly": "bun run build && bun test && bun run typecheck",
     "publish:dry": "npm pack --dry-run",
     "dev": "bun run --watch src/server.ts",

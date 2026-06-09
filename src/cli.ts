@@ -32,6 +32,15 @@ async function main() {
   const rootIdx = args.indexOf("--root");
   const rootDir = rootIdx >= 0 ? resolve(args[rootIdx + 1]) : process.cwd();
 
+  // Hidden --daemon flag (internal, spawned by `codeview start`)
+  if (cmd === "--daemon") {
+    const daemonRoot = args[1] || process.cwd();
+    const { port } = await startServer(daemonRoot, 0);
+    console.log(`PORT:${port}`);
+    process.stdin.resume(); // keep alive
+    return;
+  }
+
   if (!cmd || cmd === "--help" || cmd === "-h") {
     console.log(USAGE);
     process.exit(0);
@@ -60,12 +69,10 @@ async function main() {
         cleanupFiles(portFile, pidFile);
       }
 
-      // Spawn server daemon as detached child
-      const daemonScript = resolve(import.meta.dir, "server-daemon.js");
-      // Use .ts fallback during development
-      const scriptPath = existsSync(daemonScript) ? daemonScript : resolve(import.meta.dir, "server-daemon.ts");
+      // Spawn daemon as detached child (this same script with --daemon flag)
+      const selfScript = process.argv[1];
       const proc = Bun.spawn(
-        ["bun", "run", scriptPath, rootDir],
+        ["bun", "run", selfScript, "--daemon", rootDir],
         {
           stdout: "pipe",
           stderr: "inherit",
