@@ -42,6 +42,7 @@ codeview gives coding agents structural understanding of your TypeScript codebas
 | `start` | Start background daemon (idempotent, auto-starts on any command) |
 | `stop` | Stop daemon |
 | `status` | Running? Chunk count? Ollama reachable? |
+| `mem \| memory` | Real-time memory usage (RSS, heap, DB, vector index) |
 | `repo-map` | Full structural map with type signatures and import relationships |
 | `find <name>` | Exact symbol: file, line, signature |
 | `references <name>` | Every file that imports this symbol |
