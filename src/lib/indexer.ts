@@ -36,12 +36,15 @@ export async function indexChunks(
         const embeddings = await retryBatch(() => provider.embedBatch(batchTexts), 3);
 
         for (let j = 0; j < embeddings.length; j++) {
+          const chunkId = batchIds[j];
+          const emb = embeddings[j];
+          if (chunkId == null || emb == null) continue;
           try {
-            insertEmbedding(batchIds[j], embeddings[j], provider.dimension);
+            insertEmbedding(chunkId, emb, provider.dimension);
             embedded++;
           } catch {
             // Mark as stale if embedding insert fails
-            markStaleById(batchIds[j]);
+            markStaleById(chunkId);
             failed++;
           }
         }
@@ -79,10 +82,13 @@ export async function reEmbedStale(provider: EmbeddingProvider): Promise<number>
       const embeddings = await retryBatch(() => provider.embedBatch(batchTexts), 3);
 
       for (let j = 0; j < embeddings.length; j++) {
+        const chunk = batchChunks[j];
+        const emb = embeddings[j];
+        if (!chunk || !emb) continue;
         try {
-          insertEmbedding(batchChunks[j].id, embeddings[j], provider.dimension);
+          insertEmbedding(chunk.id, emb, provider.dimension);
           // Clear stale flag after successful re-embed
-          clearStaleFlag(batchChunks[j].id);
+          clearStaleFlag(chunk.id);
           reEmbedded++;
         } catch {}
       }

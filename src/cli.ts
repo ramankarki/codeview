@@ -47,7 +47,8 @@ async function main() {
 
   // Parse --root
   const rootIdx = args.indexOf('--root');
-  const rootDir = rootIdx >= 0 ? resolve(args[rootIdx + 1]) : process.cwd();
+  const rootArg = rootIdx >= 0 ? args[rootIdx + 1] : undefined;
+  const rootDir = rootArg ? resolve(rootArg) : process.cwd();
 
   // Hidden --daemon flag (internal, spawned by `codeview start`)
   if (cmd === '--daemon') {
@@ -91,7 +92,7 @@ async function main() {
       }
 
       // Spawn daemon as detached child (this same script with --daemon flag)
-      const selfScript = process.argv[1];
+      const selfScript = process.argv[1] ?? "";
       const proc = Bun.spawn(['bun', 'run', selfScript, '--daemon', rootDir], {
         stdout: 'pipe',
         stderr: 'inherit',
@@ -111,7 +112,7 @@ async function main() {
           if (value) {
             output += decoder.decode(value, { stream: true });
             const match = output.match(/PORT:(\d+)/);
-            if (match) {
+            if (match?.[1]) {
               port = parseInt(match[1]);
               break;
             }

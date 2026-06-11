@@ -4,6 +4,7 @@
   "description": "Local codebase intelligence server for coding agents — type-aware repo maps + semantic code search via Ollama. Pluggable into any agent via HTTP.",
   "type": "module",
   "license": "MIT",
+  "sideEffects": false,
   "homepage": "https://github.com/ramankarki/codeview#readme",
   "bugs": {
     "url": "https://github.com/ramankarki/codeview/issues"
@@ -11,17 +12,25 @@
   "publishConfig": {
     "access": "public"
   },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/ramankarki"
+  },
   "bin": {
     "codeview": "./dist/cli.js"
   },
   "files": [
     "dist",
-    "README.md"
+    "README.md",
+    "CHANGELOG.md"
   ],
+  "exports": "./dist/cli.js",
   "scripts": {
-    "build": "bun build src/cli.ts --outdir dist --target bun",
+    "build": "bun build src/cli.ts --outdir dist --target bun --minify --sourcemap=external",
     "prepublishOnly": "bun run build && bun test && bun run typecheck",
+    "prepare": "bun .husky/install.mjs",
     "publish:dry": "npm pack --dry-run",
+    "format": "prettier --write .",
     "dev": "bun run --watch src/server.ts",
     "test": "bun test",
     "typecheck": "tsc --noEmit"
@@ -31,7 +40,11 @@
     "sqlite-vec": "^0.1"
   },
   "devDependencies": {
+    "@commitlint/cli": "^21.0.2",
+    "@commitlint/config-conventional": "^21.0.2",
     "@types/bun": "latest",
+    "husky": "^9.1.7",
+    "prettier": "^3.8.4",
     "typescript": "^6.0.3"
   },
   "engines": {

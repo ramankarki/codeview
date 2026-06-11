@@ -1,5 +1,9 @@
 # codeview
 
+[![CI](https://github.com/ramankarki/codeview/actions/workflows/ci.yml/badge.svg)](https://github.com/ramankarki/codeview/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/@ramankarki/codeview)](https://www.npmjs.com/package/@ramankarki/codeview)
+[![license](https://img.shields.io/npm/l/@ramankarki/codeview)](./LICENSE)
+
 Local codebase intelligence server for coding agents. Type-aware repo maps + semantic search via Ollama — pluggable into any agent via HTTP.
 
 ## Requirements
@@ -235,3 +239,20 @@ test/fixtures/
 | `cli` | 4 | Help, start daemon, repo-map, find |
 | `monorepo` | 4 | Cross-project edges, grouped output, imported-by |
 | **Total** | **72** | **14 test files** |
+
+## Contributing
+
+Conventional Commits required. Pre-commit hook runs `bun test`.
+
+```bash
+git checkout -b feat/my-feature
+# code... (pre-commit runs bun test)
+git commit -m "feat: add my feature"
+git push → open PR → CI runs (typecheck + test + build + commitlint)
+```
+
+See [CODEVIEW_SPEC.md](./docs/CODEVIEW_SPEC.md#15-production-infrastructure) for full production infrastructure details.
+
+## License
+
+MIT © Raman Karki

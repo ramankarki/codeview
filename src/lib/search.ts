@@ -56,14 +56,14 @@ export function reciprocalRankFusion(
 
   // Score semantic results (rank 1 = best)
   for (let i = 0; i < semantic.length; i++) {
-    const r = semantic[i];
+    const r = semantic[i]!;
     const score = 1 / (k + i + 1);
     scoreMap.set(r.hash, { result: { ...r, rrfScore: score }, score });
   }
 
   // Add structural scores
   for (let i = 0; i < structural.length; i++) {
-    const r = structural[i];
+    const r = structural[i]!;
     const score = 1 / (k + i + 1);
     const existing = scoreMap.get(r.hash);
     if (existing) {

@@ -19,7 +19,7 @@ export async function checkOllama(): Promise<OllamaStatus> {
   const embedModels = models.filter(m =>
     m.includes("embed") || m.includes("nomic")
   );
-  const model = embedModels.length > 0 ? embedModels[0] : null;
+  const model = embedModels.length > 0 ? (embedModels[0] ?? null) : null;
 
   // Known dimensions for common models
   const dimMap: Record<string, number> = {
@@ -80,5 +80,5 @@ export async function embedWithOllama(
     return data.embeddings.map(e => new Float32Array(e));
   }
 
-  return new Float32Array(data.embeddings[0]);
+  return new Float32Array(data.embeddings[0]!);
 }

@@ -1,6 +1,6 @@
 # codeview — Hybrid Codebase Intelligence for Coding Agents
 
-> **Status:** Design Document v1.1 (revised 2026-06-07)
+> **Status:** Production — v1.1.0 (revised 2026-06-11)
 
 > **Philosophy:** Build what neither Aider nor Cursor has — type-aware repo maps + local semantic search, pluggable into any agent.
 
@@ -22,6 +22,7 @@
 12. [File Structure](#12-file-structure)
 13. [Package & Build Config](#13-package--build-config)
 14. [Testing Strategy](#14-testing-strategy)
+15. [Production Infrastructure](#15-production-infrastructure)
 
 ---
 
@@ -823,41 +824,55 @@ interface CodeviewConfig {
 
 ## 10. Build Phases
 
-### Phase 1: Repo Map Core (2 days)
-- [ ] Add `repo-map` endpoint to server
-- [ ] Extract function/class/interface/type signatures with type info
-- [ ] Build PageRank on import graph (with out-degree cold start bootstrap)
-- [ ] Compress into ~5K token text block (skip compression if edges < 100)
-- [ ] CLI `repo-map` command
-- [ ] Monorepo support: `projects[]` config, grouped output, cross-project edges
-- [ ] Smoke test on ts-rag codebase itself
+### Phase 1: Repo Map Core ✅
+- [x] Add `repo-map` endpoint to server
+- [x] Extract function/class/interface/type signatures with type info
+- [x] Build PageRank on import graph (with out-degree cold start bootstrap)
+- [x] Compress into ~5K token text block (skip compression if edges < 100)
+- [x] CLI `repo-map` command
+- [x] Monorepo support: `projects[]` config, grouped output, cross-project edges
+- [x] Smoke test on real codebase
 
-### Phase 2: Ollama Embeddings (1 day)
-- [ ] Ollama integration: check `localhost:11434` at startup, pull model guide
-- [ ] Chunking engine: split AST into chunks, store in SQLite
-- [ ] Track edges (imports, calls, extends) with cross-project flag
-- [ ] Incremental update: stale markers, lazy re-embed on query
-- [ ] Embed all chunks on first index
-- [ ] Remote API option (OpenAI/Voyage) as config alternative
+### Phase 2: Ollama Embeddings ✅
+- [x] Ollama integration: auto-detect at startup, pull model guide
+- [x] Chunking engine: split AST into chunks, store in SQLite
+- [x] Track edges (imports, calls, extends) with cross-project flag
+- [x] Incremental update: stale markers, lazy re-embed on query
+- [x] Embed all chunks on first index
+- [x] Remote API option (OpenAI/Voyage) as config alternative
 
-### Phase 3: Hybrid Retrieval (1 day)
-- [ ] Semantic search endpoint (sqlite-vec ANN)
-- [ ] Reciprocal rank fusion
-- [ ] Graph walk augmentation with configurable budget
-- [ ] `context` endpoint that does all of the above
-- [ ] Degraded mode: keyword-only fallback when no embedding engine
+### Phase 3: Hybrid Retrieval ✅
+- [x] Semantic search endpoint (sqlite-vec ANN)
+- [x] Reciprocal rank fusion
+- [x] Graph walk augmentation with configurable budget
+- [x] `context` endpoint that does all of the above
+- [x] Degraded mode: keyword-only fallback when no embedding engine
 
-### Phase 4: Agent Integration (0.5 day)
-- [ ] Implement `codeview init` command (generate AGENTS.md at project root, merge if exists)
-- [ ] Update AGENTS.md template
-- [ ] Test with Pi agent on a real task (structural + hybrid)
-- [ ] Test degraded mode (no Ollama, no API key)
-- [ ] Document HTTP API for other agents
+### Phase 4: Agent Integration ✅
+- [x] Implement `codeview init` command (generate AGENTS.md at project root)
+- [x] AGENTS.md template with codeview-first workflow
+- [x] Test with Pi agent on a real task (structural + hybrid)
+- [x] Test degraded mode (no Ollama, no API key)
+- [x] Document HTTP API for other agents
 
-### Phase 5: Polish & Publish (0.5 day)
-- [ ] README with example workflow (single repo + monorepo)
-- [ ] Smoke test all commands (normal + degraded)
-- [ ] Publish to npm as `codeview`
+### Phase 5: Polish & Publish ✅
+- [x] README with example workflow (single repo + monorepo)
+- [x] Smoke test all commands (normal + degraded)
+- [x] Publish to npm as `@ramankarki/codeview`
+
+### Phase 6: Production Readiness ✅
+- [x] Conventional Commits enforcement (commitlint + husky)
+- [x] Pre-commit test hook
+- [x] CI workflow (PR trigger: typecheck, test, build, commit lint)
+- [x] Release automation (release-please + merged npm publish with provenance)
+- [x] PR template
+- [x] Code formatting (prettier)
+- [x] CHANGELOG.md
+- [x] README badges (CI, version, license)
+- [x] `.gitattributes` (LF line endings)
+- [x] Stricter tsconfig (`noUncheckedIndexedAccess`, `noImplicitReturns`)
+- [x] Build optimised (`--minify`, `--sourcemap=external`, 11.5MB → 5.9MB)
+- [x] `publish:dry` for previewing npm package contents
 
 ---
 
@@ -883,32 +898,67 @@ interface CodeviewConfig {
 
 ```
 codeview/
+├── .github/
+│   ├── workflows/
+│   │   ├── ci.yml                   # PR: typecheck, test, build, commitlint
+│   │   └── release-please.yml        # Auto version bump + npm publish (OIDC provenance)
+│   └── PULL_REQUEST_TEMPLATE.md
+├── .husky/
+│   ├── commit-msg                    # Runs commitlint
+│   ├── pre-commit                    # Runs bun test
+│   └── install.mjs                   # Smart install (skips in CI)
 ├── src/
-│   ├── cli.ts              # Entry point. Parses args, routes commands.
-│   ├── server.ts           # Bun HTTP server. Holds warm state.
-│   ├── config.ts           # Config loading/saving (monorepo + embedding)
-│   ├── db.ts               # SQLite: chunks, embeddings, edges, stale markers
-│   ├── types.ts            # Shared interfaces (ProjectConfig, Chunk, etc.)
-│   ├── lib/
-│   │   ├── repo-map.ts     # Repo map generation (grouped by project, compressed)
-│   │   ├── chunker.ts      # AST chunking with context windows, cross-project aware
-│   │   ├── ranker.ts       # PageRank on import graph (out-degree cold start)
-│   │   ├── ollama.ts       # Ollama embedding provider
-│   │   ├── embedding.ts    # Embedding abstraction (Ollama | OpenAI | Voyage)
-│   │   ├── semantic.ts     # Vector search (sqlite-vec ANN, keyword fallback)
-│   │   ├── search.ts       # Hybrid search (semantic + structural fusion)
-│   │   ├── graph-walk.ts   # Budgeted graph walk augmentation
-│   │   ├── ts-service.ts   # ts-morph wrapper (multi-tsconfig, file watching)
-│   │   ├── graph.ts        # Import graph utilities (cross-project edges)
-│   │   ├── indexer.ts      # Index chunks, manage stale markers, lazy re-embed
-│   │   └── agent-instructions.ts  # AGENTS.md generator
-│   └── main.ts             # Combined entry for server + CLI
-├── dist/                   # Compiled output
-├── package.json            # "name": "codeview"
-├── cvconfig.json           # codeview config (projects[], embedding, port)
+│   ├── cli.ts                        # Entry point. Parses args, routes commands.
+│   ├── server.ts                     # Bun HTTP server. Holds warm state.
+│   ├── config.ts                     # Config loading/saving (monorepo + embedding)
+│   ├── db.ts                         # SQLite: chunks, embeddings, edges, stale markers
+│   ├── types.ts                      # Shared interfaces (ProjectConfig, Chunk, etc.)
+│   └── lib/
+│       ├── repo-map.ts               # Repo map generation (grouped by project, compressed)
+│       ├── chunker.ts                # AST chunking with context windows
+│       ├── ranker.ts                 # PageRank on import graph (out-degree cold start)
+│       ├── ollama.ts                 # Ollama embedding provider
+│       ├── embedding.ts              # Embedding abstraction (Ollama | OpenAI | Voyage)
+│       ├── search.ts                 # Hybrid search (RRF fusion, keyword fallback)
+│       ├── graph-walk.ts             # Budgeted graph walk augmentation
+│       ├── ts-service.ts             # ts-morph wrapper (multi-tsconfig, file watching)
+│       ├── graph.ts                  # Import graph utilities (cross-project edges)
+│       ├── indexer.ts                # Index chunks, manage stale markers, lazy re-embed
+│       ├── agent-instructions.ts     # AGENTS.md generator
+│       └── colors.ts                 # ANSI color tokens (NO_COLOR / non-TTY safe)
+├── dist/                             # Compiled output (bun build --minify, 5.9MB)
+├── test/
+│   ├── fixtures/                     # Test projects (tiny, monorepo, fullstack)
+│   ├── chunker.test.ts
+│   ├── cli.test.ts
+│   ├── config.test.ts
+│   ├── embedding.test.ts
+│   ├── graph.test.ts
+│   ├── graph-walk.test.ts
+│   ├── monorepo.test.ts
+│   ├── ollama.test.ts
+│   ├── ranker.test.ts
+│   ├── repo-map.test.ts
+│   ├── search.test.ts
+│   ├── semantic.test.ts
+│   ├── server.test.ts
+│   └── ts-service.test.ts
+├── docs/
+│   └── CODEVIEW_SPEC.md              # This document
+├── package.json                      # @ramankarki/codeview v1.1.0
+├── tsconfig.json                     # strict + noUncheckedIndexedAccess
+├── commitlint.config.js              # @commitlint/config-conventional
+├── release-please-config.json        # Release automation config
+├── .release-please-manifest.json     # Current version tracking
+├── .prettierrc                       # Code formatting
+├── .prettierignore
+├── .gitattributes                    # LF line endings
+├── .gitignore
+├── bun.lock                          # Committed lockfile
+├── CHANGELOG.md
+├── cvconfig.example.json             # Example config for users
 ├── README.md
-└── docs/
-    └── CODEVIEW_SPEC.md    # This document
+└── LICENSE
 ```
 
 ---
@@ -919,26 +969,44 @@ codeview/
 
 ```jsonc
 {
-  "name": "codeview",
-  "version": "0.1.0",
+  "name": "@ramankarki/codeview",
+  "version": "1.1.0",
   "type": "module",
+  "license": "MIT",
+  "sideEffects": false,
   "bin": {
     "codeview": "./dist/cli.js"
   },
-  "main": "./dist/main.js",
+  "exports": "./dist/cli.js",
+  "files": ["dist", "README.md", "CHANGELOG.md"],
+  "publishConfig": {
+    "access": "public"
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/ramankarki"
+  },
   "scripts": {
-    "build": "bun build src/cli.ts --outdir dist --target bun",
+    "build": "bun build src/cli.ts --outdir dist --target bun --minify --sourcemap=external",
+    "prepublishOnly": "bun run build && bun test && bun run typecheck",
+    "prepare": "bun .husky/install.mjs",
+    "publish:dry": "npm pack --dry-run",
+    "format": "prettier --write .",
     "dev": "bun run --watch src/server.ts",
     "test": "bun test",
-    "start": "bun run dist/server.js"
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "ts-morph": "^24",
     "sqlite-vec": "^0.1"
   },
   "devDependencies": {
+    "@commitlint/cli": "^21",
+    "@commitlint/config-conventional": "^21",
     "@types/bun": "latest",
-    "bun-types": "latest"
+    "husky": "^9",
+    "prettier": "^3",
+    "typescript": "^6"
   },
   "engines": {
     "bun": ">=1.1.0"
@@ -961,7 +1029,11 @@ Zero JS dependencies beyond ts-morph and sqlite-vec. HTTP server, SQLite, file w
 
 ### 13.3 Build
 
-Single binary target: `bun build src/cli.ts --outdir dist --target bun`. Bun bundles everything (ts-morph included, sqlite-vec excluded as native addon). `dist/cli.js` is the `bin` entry.
+Single binary target: `bun build src/cli.ts --outdir dist --target bun --minify --sourcemap=external`.
+Bun bundles everything (ts-morph included, sqlite-vec excluded as native addon).
+`dist/cli.js` is the `bin` entry (~5.9MB minified). Source maps are external (`.js.map`) to keep the binary small.
+
+`tsc --noEmit` for typechecking only — no `.d.ts` emitted (CLI tool, not a library).
 
 ### 13.4 Config Discovery
 
@@ -1062,6 +1134,77 @@ bunx codeview search "refund"
 bunx codeview rebuild
 bunx codeview stop
 ```
+
+---
+
+## 15. Production Infrastructure
+
+### 15.1 Conventional Commits
+
+All commits follow [Conventional Commits](https://www.conventionalcommits.org/):
+
+```
+feat: add new feature           → bumps MINOR (1.1.0 → 1.2.0)
+fix: handle edge case           → bumps PATCH (1.1.0 → 1.1.1)
+perf: improve speed             → bumps PATCH
+docs: update readme             → no bump
+chore: update deps              → no bump
+feat!: drop old API             → bumps MAJOR (1.1.0 → 2.0.0)
+```
+
+Enforced by:
+- **commitlint** (`@commitlint/config-conventional`) — runs on every commit via `.husky/commit-msg`
+- **CI** — commitlint runs on PRs using base/head SHAs for accurate diff
+
+### 15.2 Pre-commit Hook
+
+`.husky/pre-commit` runs `bun test` before every commit. Catches regressions before they leave the machine.
+
+### 15.3 CI Pipeline
+
+`.github/workflows/ci.yml` triggers on PRs to `main`:
+
+```yaml
+1. bun install --frozen-lockfile
+2. commitlint (PR base → head diff)
+3. bun run typecheck
+4. bun test
+5. bun run build
+```
+
+### 15.4 Release Automation
+
+`.github/workflows/release-please.yml` (single workflow, merged publish):
+
+```
+push to main
+  → release-please opens Release PR (version bump + CHANGELOG.md)
+  → review → merge
+  → git tag + GitHub Release
+  → release_created=true triggers npm-publish job
+  → bun publish --provenance --access public
+  → smoke test: bun add -g @ramankarki/codeview && codeview --help
+```
+
+**Release config** (`release-please-config.json`):
+- Release type: `node`
+- Changelog sections: Features (feat), Bug Fixes (fix), Performance (perf)
+- Hidden sections: Refactoring, Tests, Chores
+- Pre-1.0: bump minor for breaking, bump patch for features
+
+### 15.5 npm Provenance
+
+Published with OIDC-based provenance via `bun publish --provenance`:
+- `id-token: write` permission in workflow
+- GitHub provides OIDC token → npm verifies repo/workflow/commit
+- Package page shows "Built and signed on GitHub Actions"
+
+### 15.6 Code Quality
+
+- **Prettier**: `bun run format` — 100 char width, single quotes, trailing commas
+- **TypeScript**: `strict: true` + `noUncheckedIndexedAccess` + `noImplicitReturns` + `forceConsistentCasingInFileNames`
+- **Line endings**: `.gitattributes` enforces LF across all text files
+- **PR template**: Standardized checklist in `.github/PULL_REQUEST_TEMPLATE.md`
 
 ---
 

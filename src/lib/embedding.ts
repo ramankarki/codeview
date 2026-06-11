@@ -94,7 +94,7 @@ async function embedRemote(
   }
 
   const data = (await res.json()) as { data: Array<{ embedding: number[] }> };
-  return new Float32Array(data.data[0].embedding);
+  return new Float32Array(data.data[0]!.embedding);
 }
 
 async function embedBatchRemote(
