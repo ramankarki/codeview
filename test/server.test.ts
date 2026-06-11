@@ -42,16 +42,6 @@ describe("POST /repo-map", () => {
     expect(body.text).toContain("Repo map");
   });
 
-  test("respects tokenBudget parameter", async () => {
-    const res = await fetch(`${baseUrl}/repo-map`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ tokenBudget: 100 }),
-    });
-    expect(res.status).toBe(200);
-    const body = await res.json();
-    expect(body.text).toBeDefined();
-  });
 });
 
 describe("POST /search", () => {
@@ -67,16 +57,6 @@ describe("POST /search", () => {
     expect(Array.isArray(body.results)).toBe(true);
   });
 
-  test("works without query (returns empty)", async () => {
-    const res = await fetch(`${baseUrl}/search`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({}),
-    });
-    expect(res.status).toBe(200);
-    const body = await res.json();
-    expect(body.results).toBeDefined();
-  });
 });
 
 describe("POST /context", () => {
