@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/ramankarki/codeview/compare/codeview-v1.2.0...codeview-v1.2.1) (2026-06-11)
+
+
+### Bug Fixes
+
+* npm publish ([011abbe](https://github.com/ramankarki/codeview/commit/011abbe4178b0aee4df3a81f87e9cbbf3178c70e))
+
 ## [1.2.0](https://github.com/ramankarki/codeview/compare/codeview-v1.1.0...codeview-v1.2.0) (2026-06-11)
 
 
