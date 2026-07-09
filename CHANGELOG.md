@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.2](https://github.com/ramankarki/codeview/compare/codeview-v1.2.1...codeview-v1.2.2) (2026-06-11)
+
+
+### Performance
+
+* **test:** remove unnecessary tests, consolidate with beforeAll ([bacc8a2](https://github.com/ramankarki/codeview/commit/bacc8a2ec4c75ed15a297303cc8586dcbfcbb5ee))
+
 ## [1.2.1](https://github.com/ramankarki/codeview/compare/codeview-v1.2.0...codeview-v1.2.1) (2026-06-11)
 
 
